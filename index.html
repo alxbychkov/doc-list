@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,400;0,500;1,400;1,500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <title>Doc List</title>
+</head>
+
+<body>
+    <div id="app">
+        <header class="header">
+            <div class="header-title">Документы</div>
+            <div class="header-action">
+                <button class="action-btn action-bookmark"></button>
+                <button class="action-btn action-type action-btn-plus">Новый тип</button>
+                <button class="action-btn action-doc action-btn-plus">Новый документ</button>
+            </div>
+        </header>
+        <main class="main">
+            <div class="main-top">
+                <label for="search" class="label-search search-icon">
+                    <input type="text" placeholder="Поиск" id="search" class="search-input">
+                    <div class="cross-icon"></div>
+                </label>
+            </div>
+            <div class="main-body">
+                <ul class="category-list list">
+                    <li class="category-list-item open">
+                        <span class="category-list-title">Обязательные для всех</span>
+                        <span class="list-color">
+                            <i class="circle pink"></i>
+                            <i class="circle yellow"></i>
+                            <i class="circle orange"></i>
+                        </span>
+                        <span class="list-description">
+                            Документы, обязательные для всех сотрудников без исключения
+                        </span>
+                        <span class="list-action">
+                            <i class="action-edit"></i>
+                            <i class="action-delete"></i>
+                            <i class="action-move"></i>
+                        </span>
+                    </li>
+                    <li class="sub-list-item">
+                        <ul class="list">
+                            <li class="list-item">
+                                <span class="list-title">Паспорт</span>
+                                <span class="list-color">
+                                    <i class="circle sky"></i>
+                                </span>
+                                <span class="list-description pink-color">Обязательный</span>
+                                <span class="list-description">Для всех</span>
+                                <span class="list-action">
+                                    <i class="action-edit"></i>
+                                    <i class="action-delete"></i>
+                                    <i class="action-move"></i>
+                                </span>
+                            </li>
+                            <li class="drop-area"></li>
+                            <li class="list-item">
+                                <span class="list-title">Инн</span>
+                                <span class="list-color"></span>
+                                <span class="list-description pink-color">Обязательный</span>
+                                <span class="list-description">Для всех</span>
+                                <span class="list-action">
+                                    <i class="action-edit"></i>
+                                    <i class="action-delete"></i>
+                                    <i class="action-move"></i>
+                                </span>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="category-list-item">
+                        <span class="category-list-title">Обязательные для трудоустройства</span>
+                        <span class="list-color"></span>
+                        <span class="list-description">Документы, без
+                            которых невозможно трудоустройство человека на какую бы то ни было должность в компании вне
+                            зависимости от граж
+                        </span>
+                        <span class="list-action">
+                            <i class="action-edit"></i>
+                            <i class="action-delete"></i>
+                            <i class="action-move"></i>
+                        </span>
+                    </li>
+                    <li class="category-list-item">
+                        <span class="category-list-title">Специальные</span>
+                        <span class="list-color"></span>
+                        <span class="list-description"></span>
+                        <span class="list-action">
+                            <i class="action-edit"></i>
+                            <i class="action-delete"></i>
+                            <i class="action-move"></i>
+                        </span>
+                    </li>
+                </ul>
+                <ul class="list">
+                    <li class="list-item">
+                        <span class="list-title">Тестовое задание кандидата</span>
+                        <span class="list-color"></span>
+                        <span class="list-description">Россия, Белоруссия, Украина, администратор филиала, повар-сушист,
+                            повар-пиццмейкер, повар горячего цеха</span>
+                        <span class="list-action">
+                            <i class="action-edit"></i>
+                            <i class="action-delete"></i>
+                            <i class="action-move"></i>
+                        </span>
+                    </li>
+                    <li class="list-item">
+                        <span class="list-title">Трудовой договор</span>
+                        <span class="list-color"><i class="circle blue"></i><i class="circle grey"></i></span>
+                        <span class="list-description"></span>
+                        <span class="list-action">
+                            <i class="action-edit"></i>
+                            <i class="action-delete"></i>
+                            <i class="action-move"></i>
+                        </span>
+                    </li>
+                    <li class="list-item">
+                        <span class="list-title">Мед. книжка</span>
+                        <span class="list-color"></span>
+                        <span class="list-description"></span>
+                        <span class="list-action">
+                            <i class="action-edit"></i>
+                            <i class="action-delete"></i>
+                            <i class="action-move"></i>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
