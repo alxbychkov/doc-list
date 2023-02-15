@@ -7,21 +7,21 @@ import Search from '../components/Search.vue';
 const DOCUMENT_JSON = {
   CATEGORIES: [
     {
-      id: '1',
+      id: '1117',
       title: 'Обязательные для всех',
       types: ['pink', 'yellow', 'orange'],
       description:
         'Документы, обязательные для всех сотрудников без исключения',
       list: [
         {
-          id: '1',
+          id: '3687',
           title: 'Паспорт',
           types: ['sky'],
           format: 'Обязательный',
           description: 'Для всех',
         },
         {
-          id: '2',
+          id: '4658',
           title: 'Инн',
           types: [],
           format: 'Обязательный',
@@ -30,7 +30,7 @@ const DOCUMENT_JSON = {
       ],
     },
     {
-      id: '2',
+      id: '9889',
       title: 'Обязательные для трудоустройства',
       types: [],
       description:
@@ -38,7 +38,7 @@ const DOCUMENT_JSON = {
       list: [],
     },
     {
-      id: '3',
+      id: '0665',
       title: 'Специальные',
       types: [],
       description: '',
@@ -47,7 +47,7 @@ const DOCUMENT_JSON = {
   ],
   LIST: [
     {
-      id: '1',
+      id: '7183',
       title: 'Тестовое задание кандидата',
       types: [],
       format: '',
@@ -55,14 +55,14 @@ const DOCUMENT_JSON = {
         'Россия, Белоруссия, Украина, администратор филиала, повар-сушист, повар-пиццмейкер, повар горячего цеха',
     },
     {
-      id: '2',
+      id: '9764',
       title: 'Трудовой договор',
       types: ['blue', 'grey'],
       format: '',
       description: '',
     },
     {
-      id: '3',
+      id: '2372',
       title: 'Мед. книжка',
       types: [],
       format: '',
@@ -112,8 +112,35 @@ const listItemMoveHandler = (e) => {
   const el = e.currentTarget.closest('li');
 
   el.classList.contains('clone')
-      ? el.classList.remove('clone')
-      : el.classList.add('clone');
+    ? el.classList.remove('clone')
+    : el.classList.add('clone');
+};
+
+const startDragHandler = (e, item, list) => {
+  console.log(item);
+  e.dataTransfer.dropEffect = 'move';
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('item', JSON.stringify(item));
+  e.dataTransfer.setData('name', list);
+};
+
+const onDropHandler = (e, name) => {
+  const itemString = e.dataTransfer.getData('item');
+  const listName = e.dataTransfer.getData('name');
+  const item = JSON.parse(itemString);
+
+  if (!name.find((i) => i.id === item.id)) {
+    switch (listName) {
+      case 'categories':
+        categories.value = categories.value.filter((i) => i.id !== item.id);
+        list.value.push(item);
+        break;
+      case 'list':
+        list.value = list.value.filter((i) => i.id !== item.id);
+        categories.value.push(item);
+        break;
+    }
+  }
 };
 </script>
 <template>
@@ -123,12 +150,22 @@ const listItemMoveHandler = (e) => {
       <Search v-model="search" />
     </div>
     <div class="main-body">
-      <ul class="category-list list">
+      <ul
+        class="category-list list"
+        @drop="onDropHandler($event, categories)"
+        @dragenter.prevent
+        @dragover.prevent
+      >
         <li v-for="category in filteredCategories" :key="category.id">
           <div
             class="category-list-item"
-            :class="{ empty: !category.list.length, open: search }"
+            :class="{
+              empty: !category.list || !category.list.length,
+              open: search,
+            }"
             @click="listItemClickHandler"
+            draggable="true"
+            @dragstart="startDragHandler($event, category, 'categories')"
           >
             <span class="category-list-title">{{ category.title }}</span>
             <span v-if="category.types.length" class="list-color">
@@ -148,7 +185,10 @@ const listItemMoveHandler = (e) => {
               <i class="action-move" @click.stop="listItemMoveHandler"></i>
             </span>
           </div>
-          <div v-if="category.list.length" class="sub-list-item">
+          <div
+            v-if="category.list && category.list.length"
+            class="sub-list-item"
+          >
             <ul class="list">
               <li v-for="l in category.list" :key="l.id">
                 <div class="list-item">
@@ -178,8 +218,18 @@ const listItemMoveHandler = (e) => {
           </div>
         </li>
       </ul>
-      <ul class="list">
-        <li v-for="item in filteredList" :key="item.id">
+      <ul
+        class="list"
+        @drop="onDropHandler($event, list)"
+        @dragenter.prevent
+        @dragover.prevent
+      >
+        <li
+          v-for="item in filteredList"
+          :key="item.id"
+          draggable="true"
+          @dragstart="startDragHandler($event, item, 'list')"
+        >
           <div class="list-item">
             <span class="list-title">{{ item.title }}</span>
             <span v-if="item.types.length" class="list-color">
