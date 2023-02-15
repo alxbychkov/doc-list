@@ -134,14 +134,14 @@ html {
 
 .sub-list-item .list li,
 .sub-list-item .list .list-item,
-.list li:last-child .category-list-item,
-.list li:last-child .list-item {
+.list li:not(:nth-child(1)) .list-item {
   border-top: none;
 }
 
 .list li:first-child .category-list-item:not(.open),
-.list li:first-child .list-item,
-.sub-list-item .list li .list-item:not(:last-child),
+.list li:not(:nth-child(1)):first-child .list-item,
+.list li:not(:nth-child(1)):not(:last-child) .category-list-item,
+.sub-list-item .list li .list-item,
 .sub-list-item .list li:last-child {
   border-bottom: none;
 }
