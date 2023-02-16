@@ -75,6 +75,8 @@ const categories = ref(DOCUMENT_JSON.CATEGORIES);
 const list = ref(DOCUMENT_JSON.LIST);
 
 const search = ref('');
+const draggableElement = ref('');
+const coloredElement = ref('');
 
 const filteredList = computed(() =>
   list.value.filter(
@@ -117,7 +119,9 @@ const listItemMoveHandler = (e) => {
 };
 
 const startDragHandler = (e, item, list) => {
-  console.log(item);
+  draggableElement.value = item.id;
+  console.log('draggableEl: ', draggableElement.value);
+
   e.dataTransfer.dropEffect = 'move';
   e.dataTransfer.effectAllowed = 'move';
   e.dataTransfer.setData('item', JSON.stringify(item));
@@ -142,6 +146,29 @@ const onDropHandler = (e, name) => {
     }
   }
 };
+
+const onDragEnterHandler = (e, id) => {
+  const li = e.fromElement ? e.target.closest('li') : '';
+
+  console.log('enter: ', `draggableEl - ${draggableElement.value}, to: ${id}`);
+
+  if ((draggableElement.value !== id) && li) {
+    coloredElement.value = id;
+    li.classList.add('drop-area');
+  }
+};
+const onDragOverHandler = (e) => {
+  //const li = e.fromElement.closest('li');
+  //if (li) li.classList.remove('drop-area');
+};
+
+const onDragLeaveHandler = (e, id) => {
+  const li = e.target.closest('li');
+
+  console.log('leave: ', `draggableEl - ${draggableElement.value}, to: ${id}`);
+  if ((coloredElement.value === id) && li) li.classList.remove('drop-area');
+};
+
 </script>
 <template>
   <Header />
@@ -153,8 +180,8 @@ const onDropHandler = (e, name) => {
       <ul
         class="category-list list"
         @drop="onDropHandler($event, categories)"
-        @dragenter.prevent
-        @dragover.prevent
+        @dragenter.prevent="onDragEnterHandler($event, category.id)"
+        @dragover.prevent="onDragLeaveHandler($event, category.id)"
       >
         <li v-for="category in filteredCategories" :key="category.id">
           <div
