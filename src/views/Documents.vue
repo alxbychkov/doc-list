@@ -11,6 +11,7 @@ const list = ref(DOCUMENT_JSON.LIST);
 
 const search = ref('');
 const draggableElement = ref('');
+const enterElement = ref('');
 const coloredElement = ref('');
 
 const filteredList = computed(() =>
@@ -64,10 +65,12 @@ const onDropHandler = (e, name) => {
   } else {
     const ids = name.map((i) => i.id);
 
-    [name[ids.indexOf(item.id)], name[ids.indexOf(coloredElement.value)]] = [
-      name[ids.indexOf(coloredElement.value)],
-      name[ids.indexOf(item.id)],
-    ];
+    if (item.id && coloredElement.value) {
+      [name[ids.indexOf(item.id)], name[ids.indexOf(coloredElement.value)]] = [
+        name[ids.indexOf(coloredElement.value)],
+        name[ids.indexOf(item.id)],
+      ];
+    }
   }
 
   const ul = e.currentTarget;
@@ -76,17 +79,28 @@ const onDropHandler = (e, name) => {
 
 const onDragEnterHandler = (e, id) => {
   const li = e.currentTarget ? e.currentTarget : '';
-
   if (draggableElement.value !== id && li) {
-    coloredElement.value = id;
-    li.classList.add('drop-area');
+    if (coloredElement.value !== id) {
+      coloredElement.value = id;
+    }
+
+    //li.classList.add('drop-area');
+    //console.log(`Enter! draggableEl: ${draggableElement.value}; id: ${id}; coloredEl: ${coloredElement.value};`);
+  } else {
+    coloredElement.value = '';
   }
 };
 
 const onDragLeaveHandler = (e, id) => {
-  const li = e.currentTarget.closest('li');
+  const li = e.currentTarget ? e.currentTarget : '';
 
-  if (coloredElement.value === id && li) li.classList.remove('drop-area');
+  if (coloredElement.value === id && li) {
+    //coloredElement.value = '';
+    //li.classList.remove('drop-area');
+    //console.log(
+    //  `Leave! draggableEl: ${draggableElement.value}; id: ${id}; coloredEl: ${coloredElement.value};`
+    //);
+  }
 };
 
 onMounted(() => {});
@@ -106,6 +120,7 @@ onMounted(() => {});
       >
         <ListItem
           v-for="category in filteredCategories"
+          :class="{ 'drop-area': coloredElement === category.id }"
           :item="category"
           :search="search"
           :key="category.id"
@@ -146,6 +161,7 @@ onMounted(() => {});
       >
         <ListItem
           v-for="item in filteredList"
+          :class="{ 'drop-area': coloredElement === item.id }"
           :item="item"
           :search="search"
           :key="item.id"
