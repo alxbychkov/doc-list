@@ -82,11 +82,11 @@ html {
   cursor: no-drop;
 }
 
-.category-list-item.open::before {
+.category-list-item.open:not(.empty)::before {
   transform: translateY(-50%) rotate(180deg);
 }
 
-.category-list-item.open .list-action {
+.category-list-item.open:not(.empty) .list-action {
     opacity: .5;
 }
 
@@ -113,11 +113,11 @@ html {
     opacity: .2;
 }
 
-.list li.clone {
+.list li[draggable="true"] {
     box-shadow: 0px 3px 16px rgba(0, 102, 255, 0.7);
 }
 
-.list li.clone .action-move::before {
+.list li[draggable="true"] .action-move::before {
     content: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOCIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDggMTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik00LjY5NTk0IDE0LjcwODZDNC4zMDQ3MyAxNS4wOTkxIDMuNjcwNDUgMTUuMDk5MSAzLjI3OTI0IDE0LjcwODZMMC4yOTM0MDkgMTEuNzI5NkMtMC4wOTc4MDMgMTEuMzM5IC0wLjA5NzgwMzEgMTAuNzA1OSAwLjI5MzQwOSAxMC4zMTUzQzAuNjg0NjIxIDkuOTI0ODIgMS4zMTg5IDkuOTI0ODIgMS43MTAxMSAxMC4zMTUzTDQuNjk1OTQgMTMuMjk0NEM1LjA4NzE1IDEzLjY4NDkgNS4wODcxNSAxNC4zMTggNC42OTU5NCAxNC43MDg2WiIgZmlsbD0iIzAwNjZGRiIvPgo8cGF0aCBkPSJNMy4zMDM4NSAxNC43MDg2QzMuNjk1MDYgMTUuMDk5MSA0LjMyOTM0IDE1LjA5OTEgNC43MjA1NSAxNC43MDg2TDcuNzA2NTkgMTEuNzI5NkM4LjA5NzggMTEuMzM5IDguMDk3OCAxMC43MDU5IDcuNzA2NTkgMTAuMzE1M0M3LjMxNTM4IDkuOTI0ODIgNi42ODExIDkuOTI0ODIgNi4yODk4OSAxMC4zMTUzTDMuMzAzODUgMTMuMjk0NEMyLjkxMjY0IDEzLjY4NDkgMi45MTI2NCAxNC4zMTggMy4zMDM4NSAxNC43MDg2WiIgZmlsbD0iIzAwNjZGRiIvPgo8cGF0aCBkPSJNMy45ODc1OSAxNC4wMTU3QzMuNDM0MzMgMTQuMDE1NyAyLjk4NTgzIDEzLjU2NzkgMi45ODU4MyAxMy4wMTU3VjNDMi45ODU4MyAyLjQ0NzcyIDMuNDM0MzMgMiAzLjk4NzU5IDJDNC41NDA4NSAyIDQuOTg5MzUgMi40NDc3MiA0Ljk4OTM1IDNWMTMuMDE1N0M0Ljk4OTM1IDEzLjU2NzkgNC41NDA4NSAxNC4wMTU3IDMuOTg3NTkgMTQuMDE1N1oiIGZpbGw9IiMwMDY2RkYiLz4KPHBhdGggZD0iTTQuNjk1OTQgMC4yOTI4OTNDNC4zMDQ3MyAtMC4wOTc2MzExIDMuNjcwNDUgLTAuMDk3NjMxMSAzLjI3OTI0IDAuMjkyODkzTDAuMjkzNDA5IDMuMjcxOTFDLTAuMDk3ODAzIDMuNjYyNDMgLTAuMDk3ODAzMSA0LjI5NTYgMC4yOTM0MDkgNC42ODYxMkMwLjY4NDYyMSA1LjA3NjY0IDEuMzE4OSA1LjA3NjY0IDEuNzEwMTEgNC42ODYxMkw0LjY5NTk0IDEuNzA3MTFDNS4wODcxNSAxLjMxNjU4IDUuMDg3MTUgMC42ODM0MTcgNC42OTU5NCAwLjI5Mjg5M1oiIGZpbGw9IiMwMDY2RkYiLz4KPHBhdGggZD0iTTMuMzAzODUgMC4yOTI4OTNDMy42OTUwNiAtMC4wOTc2MzExIDQuMzI5MzQgLTAuMDk3NjMxMSA0LjcyMDU1IDAuMjkyODkzTDcuNzA2NTkgMy4yNzE5MUM4LjA5NzggMy42NjI0MyA4LjA5NzggNC4yOTU2IDcuNzA2NTkgNC42ODYxMkM3LjMxNTM4IDUuMDc2NjQgNi42ODExIDUuMDc2NjQgNi4yODk4OSA0LjY4NjEyTDMuMzAzODUgMS43MDcxMUMyLjkxMjY0IDEuMzE2NTggMi45MTI2NCAwLjY4MzQxNyAzLjMwMzg1IDAuMjkyODkzWiIgZmlsbD0iIzAwNjZGRiIvPgo8L3N2Zz4K);
 }
 
@@ -148,6 +148,7 @@ html {
   border-top: none;
 }
 
+.list li:not(:last-child) .category-list-item.open.empty,
 .list li:first-child .category-list-item:not(.open),
 .list li:not(:nth-child(1)):first-child .list-item,
 .list li:not(:nth-child(1)):not(:last-child) .category-list-item:not(.open),
@@ -157,7 +158,7 @@ html {
 }
 
 .list li:last-child .open + .sub-list-item .list li .list-item,
-.sub-list-item .list li:not(:last-child):first-child .list-item {
+.sub-list-item .list li:not(:last-child) .list-item {
   border-bottom: 1px solid #dfe4ef;
 }
 

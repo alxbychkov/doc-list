@@ -11,7 +11,6 @@ const list = ref(DOCUMENT_JSON.LIST);
 
 const search = ref('');
 const draggableElement = ref('');
-const enterElement = ref('');
 const coloredElement = ref('');
 
 const filteredList = computed(() =>
@@ -39,7 +38,6 @@ const filteredCategories = computed(() => {
 
 const startDragHandler = (e, item, list) => {
   draggableElement.value = item;
-  console.log('draggableEl: ', draggableElement.value.id);
 
   e.dataTransfer.dropEffect = 'move';
   e.dataTransfer.effectAllowed = 'move';
@@ -51,8 +49,6 @@ const onDropHandler = (e, name) => {
   const itemString = e.dataTransfer.getData('item');
   const listName = e.dataTransfer.getData('name');
   const item = JSON.parse(itemString);
-
-  
 
   if (!name.find((i) => i.id === item.id)) {
     const type = !!name.filter((n) => n.list).length;
@@ -69,19 +65,27 @@ const onDropHandler = (e, name) => {
         if (listType) {
           list.value = list.value.filter((i) => i.id !== item.id);
           categories.value.push(item);
-        } else if (coloredElement.value){
-          console.log(item.id, coloredElement.value);
+        } else if (coloredElement.value) {
+
           const ids = name.map((i) => i.id);
           const index = ids.indexOf(coloredElement.value) + 1;
-          //console.log(categories, name);
-          list.value.splice(index, 0, item);
-
           const cids = categories.value.map((ci, index) => {
-            return {index, ci: ci.list.map(j => j.id)}
+            return { index, ci: ci.list.map(j => j.id) }
           });
-          const cindex = cids.find(f => f.ci.includes(item.id)).index;
 
-          categories.value[cindex].list = categories.value[cindex].list.filter(k => k.id !== item.id);
+          let cindex;
+
+          if (cids.find(f => f.ci.includes(item.id))) {
+            cindex = cids.find(f => f.ci.includes(item.id)).index;
+
+            list.value.splice(index, 0, item);
+            categories.value[cindex].list = categories.value[cindex].list.filter(k => k.id !== item.id);
+          } else {
+            cindex = cids.find(f => f.ci.includes(coloredElement.value)).index;
+
+            categories.value[cindex].list.splice(index, 0, item);
+            list.value = list.value.filter(i => i.id !== item.id);
+          }
         }
         break;
     }
@@ -96,16 +100,14 @@ const onDropHandler = (e, name) => {
     }
   }
 
-  const ul = e.currentTarget;
-  ul.querySelectorAll('li').forEach((li) => li.classList.remove('drop-area'));
+  coloredElement.value = '';
 };
 
-const onDragEnterHandler = (e, item, name) => {
+const onDragEnterHandler = (item) => {
   const isList = !!item.list;
-  const isDraggableList = !!draggableElement.value.list
-  //console.log(isList, isDraggableList, name);
+  const isDraggableList = !!draggableElement.value.list;
 
-  if (draggableElement.value.id !== item.id && ((isList && isDraggableList) || (!isList && !isDraggableList))) {
+  if (draggableElement.value.id !== item.id && isList === isDraggableList) {
     if (coloredElement.value !== item.id) {
       coloredElement.value = item.id;
     }
@@ -113,10 +115,6 @@ const onDragEnterHandler = (e, item, name) => {
     coloredElement.value = '';
   }
 };
-
-const onDragLeaveHandler = (e, id) => {};
-
-onMounted(() => {});
 </script>
 <template>
   <Header />
@@ -125,65 +123,24 @@ onMounted(() => {});
       <Search v-model="search" />
     </div>
     <div class="main-body">
-      <ul
-        class="category-list list"
-        @drop="onDropHandler($event, categories)"
-        @dragenter.prevent
-        @dragover.prevent
-      >
-        <ListItem
-          v-for="category in filteredCategories"
-          :class="{ 'drop-area': coloredElement === category.id }"
-          :item="category"
-          :search="search"
-          :key="category.id"
-          draggable="true"
+      <ul class="category-list list" @drop="onDropHandler($event, categories)" @dragenter.prevent @dragover.prevent>
+        <ListItem v-for="category in filteredCategories" :class="{ 'drop-area': coloredElement === category.id }"
+          :item="category" :search="search" :key="category.id" 
           @dragstart.stop="startDragHandler($event, category, 'categories')"
-          @dragenter.stop="onDragEnterHandler($event, category, 'categories')"
-          @dragleave.stop="onDragLeaveHandler($event, category.id)"
-        >
-          <div
-            v-if="category.list && category.list.length"
-            class="sub-list-item"
-          >
-            <ul
-              class="list"
-              @drop.stop="onDropHandler($event, list)"
-              @dragenter.prevent
-              @dragover.prevent
-            >
-              <ListItem
-                v-for="item in category.list"
-                :class="{ 'drop-area': coloredElement === item.id }"
-                :item="item"
-                :search="search"
-                :key="item.id"
-                draggable="true"
-                @dragstart.stop="startDragHandler($event, item, 'list')"
-                @dragenter.stop="onDragEnterHandler($event, item, 'list')"
-                @dragleave.stop="onDragLeaveHandler($event, item.id)"
-              />
+          @dragenter.stop="onDragEnterHandler(category)">
+          <div v-if="category.list && category.list.length" class="sub-list-item">
+            <ul class="list" @drop.stop="onDropHandler($event, category.list)" @dragenter.prevent @dragover.prevent>
+              <ListItem v-for="item in category.list" :class="{ 'drop-area': coloredElement === item.id }" :item="item"
+                :search="search" :key="item.id"  @dragstart.stop="startDragHandler($event, item, 'list')"
+                @dragenter.stop="onDragEnterHandler(item)"/>
             </ul>
           </div>
         </ListItem>
       </ul>
-      <ul
-        class="list"
-        @drop="onDropHandler($event, list)"
-        @dragenter.prevent
-        @dragover.prevent
-      >
-        <ListItem
-          v-for="item in filteredList"
-          :class="{ 'drop-area': coloredElement === item.id }"
-          :item="item"
-          :search="search"
-          :key="item.id"
-          draggable="true"
-          @dragstart="startDragHandler($event, item, 'list')"
-          @dragenter="onDragEnterHandler($event, item, 'list')"
-          @dragleave="onDragLeaveHandler($event, item.id)"
-        />
+      <ul class="list" @drop="onDropHandler($event, list)" @dragenter.prevent @dragover.prevent>
+        <ListItem v-for="item in filteredList" :class="{ 'drop-area': coloredElement === item.id }" :item="item"
+          :search="search" :key="item.id"  @dragstart="startDragHandler($event, item, 'list')"
+          @dragenter="onDragEnterHandler(item)"/>
       </ul>
     </div>
   </main>
