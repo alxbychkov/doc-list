@@ -15,10 +15,11 @@ const enterElement = ref('');
 const coloredElement = ref('');
 
 const filteredList = computed(() =>
-  list.value.filter(
-    (c) => ~c.title.toLowerCase().indexOf(search.value.toLowerCase())
-  )
+  list.value.filter((c) => {
+    return ~c.title.toLowerCase().indexOf(search.value.toLowerCase());
+  })
 );
+
 const filteredCategories = computed(() => {
   return categories.value.filter((c) => {
     if (~c.title.toLowerCase().indexOf(search.value.toLowerCase())) {
@@ -37,8 +38,8 @@ const filteredCategories = computed(() => {
 });
 
 const startDragHandler = (e, item, list) => {
-  draggableElement.value = item.id;
-  console.log('draggableEl: ', draggableElement.value);
+  draggableElement.value = item;
+  console.log('draggableEl: ', draggableElement.value.id);
 
   e.dataTransfer.dropEffect = 'move';
   e.dataTransfer.effectAllowed = 'move';
@@ -51,15 +52,37 @@ const onDropHandler = (e, name) => {
   const listName = e.dataTransfer.getData('name');
   const item = JSON.parse(itemString);
 
+  
+
   if (!name.find((i) => i.id === item.id)) {
+    const type = !!name.filter((n) => n.list).length;
+    const listType = !!item.list;
+
     switch (listName) {
       case 'categories':
-        categories.value = categories.value.filter((i) => i.id !== item.id);
-        list.value.push(item);
+        if (type) {
+          categories.value = categories.value.filter((i) => i.id !== item.id);
+          list.value.push(item);
+        }
         break;
       case 'list':
-        list.value = list.value.filter((i) => i.id !== item.id);
-        categories.value.push(item);
+        if (listType) {
+          list.value = list.value.filter((i) => i.id !== item.id);
+          categories.value.push(item);
+        } else if (coloredElement.value){
+          console.log(item.id, coloredElement.value);
+          const ids = name.map((i) => i.id);
+          const index = ids.indexOf(coloredElement.value) + 1;
+          //console.log(categories, name);
+          list.value.splice(index, 0, item);
+
+          const cids = categories.value.map((ci, index) => {
+            return {index, ci: ci.list.map(j => j.id)}
+          });
+          const cindex = cids.find(f => f.ci.includes(item.id)).index;
+
+          categories.value[cindex].list = categories.value[cindex].list.filter(k => k.id !== item.id);
+        }
         break;
     }
   } else {
@@ -77,31 +100,21 @@ const onDropHandler = (e, name) => {
   ul.querySelectorAll('li').forEach((li) => li.classList.remove('drop-area'));
 };
 
-const onDragEnterHandler = (e, id) => {
-  const li = e.currentTarget ? e.currentTarget : '';
-  if (draggableElement.value !== id && li) {
-    if (coloredElement.value !== id) {
-      coloredElement.value = id;
-    }
+const onDragEnterHandler = (e, item, name) => {
+  const isList = !!item.list;
+  const isDraggableList = !!draggableElement.value.list
+  //console.log(isList, isDraggableList, name);
 
-    //li.classList.add('drop-area');
-    //console.log(`Enter! draggableEl: ${draggableElement.value}; id: ${id}; coloredEl: ${coloredElement.value};`);
+  if (draggableElement.value.id !== item.id && ((isList && isDraggableList) || (!isList && !isDraggableList))) {
+    if (coloredElement.value !== item.id) {
+      coloredElement.value = item.id;
+    }
   } else {
     coloredElement.value = '';
   }
 };
 
-const onDragLeaveHandler = (e, id) => {
-  const li = e.currentTarget ? e.currentTarget : '';
-
-  if (coloredElement.value === id && li) {
-    //coloredElement.value = '';
-    //li.classList.remove('drop-area');
-    //console.log(
-    //  `Leave! draggableEl: ${draggableElement.value}; id: ${id}; coloredEl: ${coloredElement.value};`
-    //);
-  }
-};
+const onDragLeaveHandler = (e, id) => {};
 
 onMounted(() => {});
 </script>
@@ -125,9 +138,9 @@ onMounted(() => {});
           :search="search"
           :key="category.id"
           draggable="true"
-          @dragstart="startDragHandler($event, category, 'categories')"
-          @dragenter="onDragEnterHandler($event, category.id)"
-          @dragleave="onDragLeaveHandler($event, category.id)"
+          @dragstart.stop="startDragHandler($event, category, 'categories')"
+          @dragenter.stop="onDragEnterHandler($event, category, 'categories')"
+          @dragleave.stop="onDragLeaveHandler($event, category.id)"
         >
           <div
             v-if="category.list && category.list.length"
@@ -141,13 +154,14 @@ onMounted(() => {});
             >
               <ListItem
                 v-for="item in category.list"
+                :class="{ 'drop-area': coloredElement === item.id }"
                 :item="item"
                 :search="search"
                 :key="item.id"
                 draggable="true"
-                @dragstart="startDragHandler($event, item, 'list')"
-                @dragenter="onDragEnterHandler($event, item.id)"
-                @dragleave="onDragLeaveHandler($event, item.id)"
+                @dragstart.stop="startDragHandler($event, item, 'list')"
+                @dragenter.stop="onDragEnterHandler($event, item, 'list')"
+                @dragleave.stop="onDragLeaveHandler($event, item.id)"
               />
             </ul>
           </div>
@@ -167,7 +181,7 @@ onMounted(() => {});
           :key="item.id"
           draggable="true"
           @dragstart="startDragHandler($event, item, 'list')"
-          @dragenter="onDragEnterHandler($event, item.id)"
+          @dragenter="onDragEnterHandler($event, item, 'list')"
           @dragleave="onDragLeaveHandler($event, item.id)"
         />
       </ul>

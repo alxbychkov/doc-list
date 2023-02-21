@@ -150,13 +150,14 @@ html {
 
 .list li:first-child .category-list-item:not(.open),
 .list li:not(:nth-child(1)):first-child .list-item,
-.list li:not(:nth-child(1)):not(:last-child) .category-list-item,
+.list li:not(:nth-child(1)):not(:last-child) .category-list-item:not(.open),
 .sub-list-item .list li .list-item,
 .sub-list-item .list li:last-child {
   border-bottom: none;
 }
 
-.sub-list-item .list li:first-child .list-item {
+.list li:last-child .open + .sub-list-item .list li .list-item,
+.sub-list-item .list li:not(:last-child):first-child .list-item {
   border-bottom: 1px solid #dfe4ef;
 }
 
